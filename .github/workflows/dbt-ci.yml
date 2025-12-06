@@ -16,10 +16,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.9'
 
@@ -28,6 +28,7 @@ jobs:
           pip install sqlfluff sqlfluff-templater-dbt
 
       - name: Lint SQL files
+        # Note: '|| true' suppresses errors. Remove it if you want the CI to fail on lint errors.
         run: |
           cd dbt
           sqlfluff lint models/ --dialect tsql || true
@@ -39,10 +40,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.9'
 
@@ -61,10 +62,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.9'
 
@@ -78,17 +79,19 @@ jobs:
           dbt deps
 
       - name: Compile DBT models
+        # Warning: '|| true' will make this step pass even if compilation fails.
         run: |
           cd dbt
           dbt compile --profiles-dir . || true
         continue-on-error: true
 
       - name: Upload compiled artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4  # UPDATED HERE
         with:
           name: dbt-compiled
           path: dbt/target/
           retention-days: 7
+          overwrite: true
 
   generate-docs:
     name: Generate DBT Documentation
@@ -98,10 +101,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.9'
 
@@ -120,7 +123,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload documentation
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: dbt-docs
           path: |
