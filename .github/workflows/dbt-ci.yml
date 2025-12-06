@@ -28,7 +28,7 @@ jobs:
           pip install sqlfluff sqlfluff-templater-dbt
 
       - name: Lint SQL files
-        # Note: '|| true' suppresses errors. Remove it if you want the CI to fail on lint errors.
+        # Note: '|| true' suppresses errors.
         run: |
           cd dbt
           sqlfluff lint models/ --dialect tsql || true
@@ -79,14 +79,13 @@ jobs:
           dbt deps
 
       - name: Compile DBT models
-        # Warning: '|| true' will make this step pass even if compilation fails.
         run: |
           cd dbt
           dbt compile --profiles-dir . || true
         continue-on-error: true
 
       - name: Upload compiled artifacts
-        uses: actions/upload-artifact@v4  # UPDATED HERE
+        uses: actions/upload-artifact@v4
         with:
           name: dbt-compiled
           path: dbt/target/
