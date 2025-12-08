@@ -9,15 +9,20 @@ models:
         tests:
           - unique
           - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: int
 
       - name: FirstName
-        description: "Customer first name"
+        description: "Customer first name (NULL for store customers)"
 
       - name: LastName
-        description: "Customer last name"
+        description: "Customer last name (NULL for store customers)"
 
       - name: EmailPromotion
         description: "Email promotion preference"
+        tests:
+          - accepted_values:
+              values: [0, 1, 2]
 
       - name: StoreID
         description: "Store identifier"
@@ -37,6 +42,8 @@ models:
         description: "Primary key"
         tests:
           - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: int
 
       - name: order_date
         description: "Order date"
@@ -52,12 +59,20 @@ models:
 
       - name: status
         description: "Order status"
+        tests:
+          - accepted_values:
+              values: [1, 2, 3, 4, 5, 6]
 
       - name: online_order_flag
         description: "Online order flag"
+        tests:
+          - dbt_expectations.expect_column_values_to_be_in_set:
+              value_set: [0, 1]
 
       - name: sales_order_number
         description: "Sales order number"
+        tests:
+          - not_null
 
       - name: purchase_order_number
         description: "Purchase order number"
@@ -81,15 +96,23 @@ models:
 
       - name: product_id
         description: "Product ID"
+        tests:
+          - not_null
 
       - name: order_qty
         description: "Order quantity"
+        tests:
+          - positive_values
 
       - name: unit_price
         description: "Unit price"
+        tests:
+          - positive_values
 
       - name: unit_price_discount
         description: "Unit price discount"
 
       - name: line_total
         description: "Line total"
+        tests:
+          - positive_values
