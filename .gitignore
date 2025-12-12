@@ -6,6 +6,7 @@ __pycache__/
 .Python
 env/
 venv/
+.venv/
 ENV/
 *.egg-info/
 
@@ -15,6 +16,7 @@ dbt/dbt_packages/
 dbt/logs/
 dbt/.user.yml
 dbt/profiles.yml
+dbt/gx/
 
 # Airflow
 airflow/logs/
@@ -28,6 +30,9 @@ airflow/unittests.cfg
 # Environment variables
 .env
 .env.local
+
+echo ".env.*" >> .gitignore
+echo "!.env.example" >> .gitignore
 
 # IDE
 .vscode/

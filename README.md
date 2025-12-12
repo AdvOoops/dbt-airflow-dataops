@@ -1,144 +1,54 @@
 # DBT and Airflow Data Pipeline Project
 
+![DBT CI](https://github.com/AdvOoops/dbt-airflow-dataops/workflows/DBT%20CI%20Pipeline/badge.svg)
+![Python Quality](https://github.com/AdvOoops/dbt-airflow-dataops/workflows/Python%20Code%20Quality/badge.svg)
+
 ## Project Overview
 This project implements an automated data transformation pipeline using DBT (Data Build Tool) and Apache Airflow. The pipeline extracts data from SQL Server, transforms it using DBT models, and loads it into a target database, following modern data engineering best practices.
 
-### Architecture Overview
-```
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│  SQL Server │ ──► │    DBT     │ ──► │  Target DB  │
-└─────────────┘     └─────────────┘     └─────────────┘
-        ▲                  ▲                   ▲
-        └──────────┬──────┴───────────┬───────┘
-                   │                   │
-            ┌──────┴───────┐    ┌─────┴──────┐
-            │   Airflow    │    │  Docker    │
-            └──────────────┘    └────────────┘
-```
+## Documentation
 
-## Prerequisites
-- Docker and Docker Compose
-- Git
-- Basic understanding of SQL, DBT, and Airflow
-- Access to source SQL Server database
+> **[Architecture Overview](docs/ARCHITECTURE.md)**
+> High-level design, component details, and **Mermaid diagrams**.
+>
+> **[Setup Guide](docs/SETUP_GUIDE.md)**
+> Step-by-step instructions to get the project running.
+>
+> **[Data Models](docs/DATA_MODELS.md)**
+> Explanation of Bronze, Silver, and Gold layers.
+>
+> **[Troubleshooting](docs/TROUBLESHOOTING.md)**
+> Solutions for common Docker, Airflow, and DBT issues.
 
-## Project Structure and Components
+## Quick Start
+
+1.  Clone the repo: `git clone <url>`
+2.  Start services: `docker-compose up -d`
+3.  Access Airflow: `http://localhost:8080` (airflow/airflow)
+
+For full details, please refer to the [Setup Guide](docs/SETUP_GUIDE.md).
+
+## Project Structure
 
 ```
 dbt_airflow_project/
-├── airflow/
-│   ├── dags/                  # Contains Airflow DAG definitions
-│   │   └── dbt_dag.py        # DAG that orchestrates DBT transformations
-│   └── logs/                  # Airflow execution logs
-├── dbt/
-│   ├── models/               # Contains all DBT data models
-│   │   ├── staging/         # First layer: Raw data cleaning and standardization
-│   │   │   ├── stg_sales_orders.sql    # Example staging model
-│   │   │   └── schema.yml              # Model tests and documentation
-│   │   └── marts/           # Final layer: Business-level transformations
-│   ├── dbt_project.yml      # DBT project configurations
-│   ├── packages.yml         # External DBT package dependencies
-│   └── profiles.yml         # Database connection profiles
-└── docker-compose.yml       # Container orchestration configuration
+├── airflow/            # Orchestration logic
+├── dbt/                # Data transformation models
+├── docs/               # Detailed documentation
+└── docker-compose.yml  # Infrastructure
 ```
 
-### Component Details
+## Architecture
 
-#### 1. Airflow Components
-- **dags/**: 
-  - Purpose: Stores Airflow DAG (Directed Acyclic Graph) definitions
-  - Contents: Python files defining workflow orchestration
-  - Key File: `dbt_dag.py` - Orchestrates the DBT transformation pipeline
-  - Usage: Schedules and monitors DBT model runs and tests
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the detailed diagram.
 
-- **logs/**: 
-  - Purpose: Contains Airflow execution logs
-  - Usage: Debugging and monitoring task execution
-  - Retention: Typically keeps logs for last 30 days
+```mermaid
+graph TD
+    SQL[SQL Server] --> DBT[DBT Transformation]
+    DBT --> Target[Target DB]
+    Airflow[Airflow Orchestrator] --> DBT
+```
 
-#### 2. DBT Components
-- **models/staging/**: 
-  - Purpose: First layer of transformation
-  - Contents: SQL models that clean and standardize raw data
-  - Example: `stg_sales_orders.sql` combines and standardizes sales order tables
-  - Materialization: Usually materialized as views for flexibility
-
-- **models/marts/**: 
-  - Purpose: Final transformation layer
-  - Contents: Business-level transformations ready for reporting
-  - Materialization: Usually materialized as tables for performance
-  - Usage: Direct connection to BI tools
-
-- **dbt_project.yml**: 
-  - Purpose: DBT project configuration
-  - Contents: 
-    - Project name and version
-    - Model configurations
-    - Materialization settings
-    - Custom macro configurations
-
-- **packages.yml**: 
-  - Purpose: Manages external DBT packages
-  - Current Packages:
-    - dbt-utils: Provides additional SQL macros and functions
-  - Usage: Install packages using `dbt deps`
-
-- **profiles.yml**: 
-  - Purpose: Database connection configuration
-  - Contents: 
-    - Connection credentials
-    - Target database settings
-    - Environment-specific configurations
-
-#### 3. Docker Components
-- **docker-compose.yml**: 
-  - Purpose: Container orchestration
-  - Services Defined:
-    1. **airflow-webserver**: Web interface for Airflow
-       - Port: 8080
-       - Usage: Monitor and manage DAGs
-    
-    2. **airflow-scheduler**: Airflow task scheduler
-       - Purpose: Executes DAGs based on schedule
-       - Dependencies: PostgreSQL for metadata
-    
-    3. **postgres**: Airflow metadata database
-       - Purpose: Stores Airflow state and history
-       - Port: 5432
-    
-    4. **sqlserver**: Source database
-       - Purpose: Stores raw data
-       - Port: 1433
-       - Database: AdventureWorks
-    
-    5. **dbt**: DBT transformation container
-       - Purpose: Executes DBT commands
-       - Mounts: ./dbt directory for access to models
-
-### Removed Components
-The following components from the original structure were removed as they weren't essential:
-- `dbt/tests/` - Tests are now included in schema.yml files
-- `dbt/macros/` - Using standard macros from dbt_utils package
-- `dbt/intermediate/` - Using two-layer (staging/marts) architecture
-- `docker/airflow/` and `docker/dbt/` - Docker configurations included in main docker-compose.yml
-
-## Container Workflow
-1. **Data Flow**:
-   ```
-   SQL Server (source) → DBT (transformation) → SQL Server (transformed)
-   ```
-
-2. **Process Flow**:
-   ```
-   Airflow Scheduler → Triggers DBT Container → Runs Models → Updates Status
-   ```
-
-3. **Monitoring Flow**:
-   ```
-   Airflow UI → View Logs → Check Task Status → Monitor Transformations
-   ```
-
-## Step-by-Step Implementation Guide
 
 ### 1. Initial Setup
 
@@ -417,4 +327,4 @@ Common issues and solutions:
 For additional support:
 - Check the project issues
 - Contact the development team
-- Refer to DBT and Airflow documentation 
+- Refer to DBT and Airflow documentation

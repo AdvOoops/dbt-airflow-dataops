@@ -46,6 +46,7 @@ services:
       - ./airflow/logs:/opt/airflow/logs
       - ./airflow/plugins:/opt/airflow/plugins
       - ./dbt:/opt/airflow/dbt
+      - ./gx:/opt/airflow/gx
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "8080:8080"
@@ -69,6 +70,7 @@ services:
       - ./airflow/logs:/opt/airflow/logs
       - ./airflow/plugins:/opt/airflow/plugins
       - ./dbt:/opt/airflow/dbt
+      - ./gx:/opt/airflow/gx
       - /var/run/docker.sock:/var/run/docker.sock
     command: airflow scheduler
     networks:
@@ -82,6 +84,8 @@ services:
       - sqlserver
     volumes:
       - ./dbt:/usr/app/dbt
+      - ./scripts:/usr/app/scripts
+      - ./gx:/usr/app/gx
     command: tail -f /dev/null  # Keep container running
     networks:
       - dbt_airflow_network
@@ -92,4 +96,4 @@ volumes:
 
 networks:
   dbt_airflow_network:
-    driver: bridge 
+    driver: bridge
