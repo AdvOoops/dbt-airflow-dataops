@@ -30,6 +30,9 @@ airflow/unittests.cfg
 .env
 .env.local
 
+echo ".env.*" >> .gitignore
+echo "!.env.example" >> .gitignore
+
 # IDE
 .vscode/
 .idea/

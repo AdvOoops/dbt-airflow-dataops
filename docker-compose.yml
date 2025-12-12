@@ -82,6 +82,7 @@ services:
       - sqlserver
     volumes:
       - ./dbt:/usr/app/dbt
+      - ./scripts:/usr/app/scripts
     command: tail -f /dev/null  # Keep container running
     networks:
       - dbt_airflow_network
